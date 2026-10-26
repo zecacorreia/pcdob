@@ -8,10 +8,11 @@ import {
   useMotionTemplate,
   useMotionValue,
   useReducedMotion,
+  useScroll,
   useSpring,
   useTransform,
 } from "framer-motion";
-import { useMemo, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 
 import { LogoSymbol } from "@/components/brand/Logo";
 import { Reveal, RevealText } from "@/components/motion/Reveal";
@@ -116,23 +117,7 @@ export function Leaderships({ featured, deputies }: LeadershipsProps) {
           </Reveal>
         </div>
 
-        <motion.ul layout className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-5">
-          <AnimatePresence mode="popLayout" initial={false}>
-            {visible.map((deputy, index) => (
-              <motion.li
-                key={deputy.id}
-                layout
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.7, ease: EASE_OUT_EXPO, delay: (index % 4) * 0.06 }}
-              >
-                <DeputyCard leader={deputy} />
-              </motion.li>
-            ))}
-          </AnimatePresence>
-        </motion.ul>
+        <DeputiesTrack deputies={visible} resetKey={uf} />
 
         <p className="mt-8 text-xs text-ink/50">
           Composição e fotos oficiais:{" "}
@@ -148,6 +133,120 @@ export function Leaderships({ featured, deputies }: LeadershipsProps) {
         </p>
       </div>
     </section>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*                         Bancada: slider / grid                             */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Abaixo de `md`, slider horizontal com scroll-snap nativo (o gesto de
+ * arrastar é o do próprio navegador), setas, contador e barra de progresso.
+ * De `md` em diante, o mesmo DOM vira grid — só as classes mudam.
+ */
+function DeputiesTrack({ deputies, resetKey }: { deputies: Leader[]; resetKey: string }) {
+  const trackRef = useRef<HTMLUListElement>(null);
+  // Card de destino enquanto a rolagem suave acontece: cliques rápidos somam
+  // a partir dele, e não da posição intermediária da animação.
+  const targetRef = useRef<number | null>(null);
+  const [position, setPosition] = useState({ index: 0, atStart: true, atEnd: deputies.length <= 1 });
+  const { scrollXProgress } = useScroll({ container: trackRef });
+
+  /** Largura de um passo do slider: um card + o espaço entre cards. */
+  function stepWidth(track: HTMLUListElement) {
+    const first = track.children[0] as HTMLElement | undefined;
+    if (!first) return track.clientWidth;
+    const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+    return first.offsetWidth + gap;
+  }
+
+  function updatePosition() {
+    const track = trackRef.current;
+    if (!track) return;
+    const maxScroll = track.scrollWidth - track.clientWidth;
+    const step = stepWidth(track);
+    const atEnd = track.scrollLeft >= maxScroll - 4;
+    // Chegou ao destino (ou ao fim, onde o último card não encosta à esquerda).
+    if (targetRef.current !== null && (Math.abs(track.scrollLeft - targetRef.current * step) < 4 || atEnd)) {
+      targetRef.current = null;
+    }
+    setPosition({
+      index: Math.min(deputies.length - 1, Math.round(track.scrollLeft / step)),
+      atStart: track.scrollLeft <= 4,
+      atEnd,
+    });
+  }
+
+  function go(direction: 1 | -1) {
+    const track = trackRef.current;
+    if (!track) return;
+    const step = stepWidth(track);
+    const from = targetRef.current ?? Math.round(track.scrollLeft / step);
+    const next = Math.max(0, Math.min(deputies.length - 1, from + direction));
+    targetRef.current = next;
+    track.scrollTo({ left: next * step, behavior: "smooth" });
+  }
+
+  // Trocar o filtro de estado volta o slider para o primeiro card.
+  useEffect(() => {
+    targetRef.current = null;
+    trackRef.current?.scrollTo({ left: 0 });
+    updatePosition();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reage só à troca de filtro/lista
+  }, [resetKey, deputies.length]);
+
+  const arrow =
+    "grid h-11 w-11 place-items-center rounded-full border border-ink/20 transition-colors duration-300 hover:border-vermelho hover:bg-vermelho hover:text-paper disabled:pointer-events-none disabled:opacity-30";
+
+  return (
+    <div>
+      <motion.ul
+        ref={trackRef}
+        layout
+        layoutScroll
+        onScroll={updatePosition}
+        // Arrastar com o dedo cancela o destino dos botões.
+        onTouchStart={() => (targetRef.current = null)}
+        aria-label="Deputadas e deputados federais"
+        className="-mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-5 px-5 pb-1 [scrollbar-width:none] md:mx-0 md:grid md:snap-none md:grid-cols-3 md:gap-4 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-4 lg:gap-5 [&::-webkit-scrollbar]:hidden"
+      >
+        <AnimatePresence mode="popLayout" initial={false}>
+          {deputies.map((deputy, index) => (
+            <motion.li
+              key={deputy.id}
+              layout
+              className="w-[72%] shrink-0 snap-start sm:w-[44%] md:w-auto"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.7, ease: EASE_OUT_EXPO, delay: (index % 4) * 0.06 }}
+            >
+              <DeputyCard leader={deputy} />
+            </motion.li>
+          ))}
+        </AnimatePresence>
+      </motion.ul>
+
+      {/* Controles — só no modo slider */}
+      {deputies.length > 1 && (
+        <div className="mt-6 flex items-center gap-4 md:hidden">
+          <span aria-live="polite" className="w-14 shrink-0 text-xs font-semibold tabular-nums tracking-[0.15em] text-ink/60">
+            {String(position.index + 1).padStart(2, "0")} / {String(deputies.length).padStart(2, "0")}
+          </span>
+          <div aria-hidden="true" className="h-px flex-1 bg-ink/15">
+            <motion.div className="h-full origin-left bg-vermelho" style={{ scaleX: scrollXProgress }} />
+          </div>
+          <button type="button" onClick={() => go(-1)} disabled={position.atStart} aria-label="Parlamentar anterior" className={arrow}>
+            <ArrowIcon className="h-4 w-4 rotate-180" />
+          </button>
+          <button type="button" onClick={() => go(1)} disabled={position.atEnd} aria-label="Próximo parlamentar" className={arrow}>
+            <ArrowIcon className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 
