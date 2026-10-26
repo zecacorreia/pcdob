@@ -71,7 +71,13 @@ const config: Config = {
         // Mínimo de 2.25rem: com 3rem, palavras longas ("PRIVACIDADE", "COMUNISTA")
         // não cabiam em celulares de 375px. Acima de ~400px vale o 9vw.
         "display-xl": ["clamp(2.25rem, 9vw, 9rem)", { lineHeight: "0.86", letterSpacing: "-0.035em" }],
-        "display-lg": ["clamp(2.25rem, 5.5vw, 5.5rem)", { lineHeight: "0.9", letterSpacing: "-0.03em" }],
+        // Em celulares acompanha 8vw (30px em 375, 31px em 390/393, 34px em 430): a linha mais
+        // longa ("dentro da luta", ~10.3em) cabe nos 350px úteis de um iPhone 14. De ~525px a
+        // ~765px fica em 42px e depois volta à escala original de 5.5vw, limitada a 5.5rem.
+        "display-lg": [
+          "clamp(1.875rem, 8vw, min(5.5rem, max(2.625rem, 5.5vw)))",
+          { lineHeight: "0.9", letterSpacing: "-0.03em" },
+        ],
         "display-md": ["clamp(1.75rem, 3vw, 3rem)", { lineHeight: "0.95", letterSpacing: "-0.02em" }],
       },
       transitionTimingFunction: {

@@ -37,7 +37,11 @@ export function Footer() {
       <div className="container relative pt-24 md:pt-32">
         {/* ---------- Newsletter + redes ---------- */}
         <div className="grid gap-16 lg:grid-cols-12 lg:gap-10">
-          <section id="newsletter" aria-labelledby="newsletter-title" className="lg:col-span-7">
+          {/*
+            min-w-0 nos itens do grid: sem ele a coluna nunca encolhe abaixo da largura
+            intrínseca do <input> (~250px) e o formulário estoura a tela em celulares.
+          */}
+          <section id="newsletter" aria-labelledby="newsletter-title" className="min-w-0 lg:col-span-7">
             <Reveal>
               <p className="mb-5 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-paper/80 md:text-sm">
                 <span className="h-px w-10 bg-ouro" aria-hidden="true" />
@@ -56,7 +60,7 @@ export function Footer() {
             </Reveal>
           </section>
 
-          <nav aria-label="Redes sociais" className="lg:col-span-4 lg:col-start-9">
+          <nav aria-label="Redes sociais" className="min-w-0 lg:col-span-4 lg:col-start-9">
             <Reveal>
               <p className="mb-5 text-xs font-semibold uppercase tracking-[0.25em] text-paper/80 md:text-sm">
                 Siga o partido

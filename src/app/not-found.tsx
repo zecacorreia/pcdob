@@ -15,7 +15,8 @@ export default function NotFound() {
           <span className="h-px w-10 bg-ouro" aria-hidden="true" />
           Erro 404
         </p>
-        <h1 className="font-display text-display-2xl font-black uppercase [font-stretch:115%]">
+        {/* display-xl (e não 2xl): "ENCONTRADA" passava da tela em celulares de 393px. */}
+        <h1 className="font-display text-display-xl font-black uppercase [font-stretch:115%]">
           Página <span className="block text-ouro">não encontrada</span>
         </h1>
         <p className="mt-8 max-w-md text-lg text-paper/70">
