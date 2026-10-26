@@ -68,7 +68,9 @@ const config: Config = {
         // Limitado também pela altura (svh) para a manchete do Hero caber
         // junto com os CTAs em telas baixas.
         "display-2xl": ["clamp(3.25rem, min(11vw, 15svh), 13rem)", { lineHeight: "0.82", letterSpacing: "-0.04em" }],
-        "display-xl": ["clamp(3rem, 9vw, 9rem)", { lineHeight: "0.86", letterSpacing: "-0.035em" }],
+        // Mínimo de 2.25rem: com 3rem, palavras longas ("PRIVACIDADE", "COMUNISTA")
+        // não cabiam em celulares de 375px. Acima de ~400px vale o 9vw.
+        "display-xl": ["clamp(2.25rem, 9vw, 9rem)", { lineHeight: "0.86", letterSpacing: "-0.035em" }],
         "display-lg": ["clamp(2.25rem, 5.5vw, 5.5rem)", { lineHeight: "0.9", letterSpacing: "-0.03em" }],
         "display-md": ["clamp(1.75rem, 3vw, 3rem)", { lineHeight: "0.95", letterSpacing: "-0.02em" }],
       },

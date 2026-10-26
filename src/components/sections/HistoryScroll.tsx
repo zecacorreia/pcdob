@@ -128,7 +128,8 @@ export function HistoryScroll({
           }
         >
           {/* Painel de abertura */}
-          <li className={pinned ? "flex w-[min(80vw,52rem)] shrink-0 flex-col justify-center pr-[8vw]" : "mb-16"}>
+          {/* 58rem: em telas largas o título chega a 9rem e "UM SÉCULO" precisa de ~5em. */}
+          <li className={pinned ? "flex w-[min(80vw,58rem)] shrink-0 flex-col justify-center pr-[8vw]" : "mb-16"}>
             {!pinned && (
               <Reveal>
                 <p className="mb-5 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-paper/60">

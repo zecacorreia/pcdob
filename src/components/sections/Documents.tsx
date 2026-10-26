@@ -80,7 +80,9 @@ export function Documents({ documents = partyDocuments }: DocumentsProps) {
               lines={["Resoluções", "e textos"]}
               accentLine={1}
               accentClassName="text-ouro"
-              className="font-display text-display-lg font-black uppercase [font-stretch:115%]"
+              // A partir de lg o título fica numa coluna de 4/12: "RESOLUÇÕES" ocupa
+              // ~8.3em, então o tamanho acompanha a largura dessa coluna.
+              className="font-display text-display-lg font-black uppercase [font-stretch:115%] lg:text-[clamp(2rem,3.4vw,3.5rem)]"
             />
             <Reveal delay={0.15}>
               <p className="mt-6 max-w-sm text-base leading-relaxed text-paper/65">

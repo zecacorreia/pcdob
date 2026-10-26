@@ -77,15 +77,16 @@
 @layer utilities {
   /*
    * Máscara das linhas de manchete que "sobem". Com entrelinha < 1, acentos de
-   * maiúsculas (Ó, Ã, É) passam do topo da caixa: o padding estende a área
-   * visível para cima e a margem negativa compensa, sem mudar o layout.
+   * maiúsculas (Ó, Ã, É) passam do topo da caixa e a cedilha (Ç) passa da
+   * base. Nas laterais, letras com espaçamento negativo avançam alguns px
+   * além da caixa. O padding estende a área visível e a margem negativa
+   * compensa, sem mudar o layout (sobra o mesmo 0.08em embaixo de antes).
    */
   .line-mask {
     display: block;
     overflow: hidden;
-    padding-top: 0.2em;
-    margin-top: -0.2em;
-    padding-bottom: 0.08em;
+    padding: 0.2em 0.06em 0.24em;
+    margin: -0.2em -0.06em -0.16em;
   }
 
   /* Texto vazado (só contorno) — usado nos anos da timeline. */

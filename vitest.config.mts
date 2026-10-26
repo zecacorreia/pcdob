@@ -10,5 +10,8 @@ export default defineConfig({
     setupFiles: ["./tests/setup.ts"],
     include: ["tests/**/*.test.{ts,tsx}"],
     css: false,
+    // Maior que o asyncUtilTimeout (5s, em tests/setup.ts): com a máquina
+    // carregada, um findBy lento não pode estourar o limite do próprio teste.
+    testTimeout: 15_000,
   },
 });
