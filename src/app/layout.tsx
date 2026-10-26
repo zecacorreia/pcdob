@@ -7,6 +7,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { ConsentManager } from "@/components/privacy/ConsentManager";
 import { SmoothScroll } from "@/components/providers/SmoothScroll";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { BASE_OPEN_GRAPH } from "@/lib/seo";
 import { SITE, absoluteUrl } from "@/lib/site";
 
 import "./globals.css";
@@ -25,6 +26,12 @@ const sans = Inter({
   display: "swap",
 });
 
+/**
+ * Metadata global. Ícones (icon.svg, favicon.ico, apple-icon.png), manifest e
+ * imagem de compartilhamento vêm das convenções de arquivo em src/app.
+ * Sem `canonical` aqui de propósito: herdado, ele marcaria toda página como
+ * cópia da home. Cada página declara o seu via `pageMetadata` (lib/seo.ts).
+ */
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
@@ -32,17 +39,35 @@ export const metadata: Metadata = {
     template: `%s | ${SITE.name}`,
   },
   description: SITE.description,
-  alternates: { canonical: "/" },
-  openGraph: {
-    type: "website",
-    locale: SITE.locale,
-    siteName: SITE.name,
-  },
+  applicationName: SITE.name,
+  authors: [{ name: SITE.legalName, url: SITE.url }],
+  creator: SITE.legalName,
+  publisher: SITE.legalName,
+  keywords: [
+    "PCdoB",
+    "Partido Comunista do Brasil",
+    "partido político",
+    "socialismo",
+    "democracia",
+    "soberania nacional",
+    "notícias",
+    "filiação partidária",
+  ],
+  category: "politics",
+  openGraph: { ...BASE_OPEN_GRAPH, type: "website" },
   twitter: { card: "summary_large_image", site: "@pcdob_oficial" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+  },
+  appleWebApp: { title: SITE.name, statusBarStyle: "black-translucent" },
+  formatDetection: { telephone: false, email: false, address: false },
 };
 
 export const viewport: Viewport = {
   themeColor: "#110A0A",
+  colorScheme: "dark light",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

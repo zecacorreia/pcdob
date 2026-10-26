@@ -20,6 +20,7 @@ npm run dev                  # http://localhost:3000
 | `npm run lint` | ESLint com as regras do Next (Core Web Vitals + TypeScript) |
 | `npm test` / `npm run test:watch` | Testes (Vitest + Testing Library) |
 | `npm run check` | Tipos + lint + testes, em sequência (use antes de abrir PR) |
+| `npm run icons` | Regera favicon, ícone do iOS e ícones do manifest a partir do símbolo ([`scripts/generate-icons.mjs`](scripts/generate-icons.mjs)) |
 
 > Não rode `npm run build` com o `npm run dev` ligado: os dois usam a pasta `.next` e o servidor de desenvolvimento quebra. Pare o dev, faça o build e ligue de novo.
 
@@ -71,7 +72,8 @@ src/
 │   ├── noticias/               # listagem + [slug]
 │   ├── o-partido/ filie-se/ privacidade/
 │   ├── api/newsletter/route.ts
-│   ├── sitemap.ts robots.ts opengraph-image.tsx
+│   ├── sitemap.ts robots.ts manifest.ts opengraph-image.tsx
+│   ├── icon.svg favicon.ico apple-icon.png   # gerados por `npm run icons`
 │   └── not-found.tsx error.tsx
 ├── components/
 │   ├── brand/                  # logo, símbolo e lettering em SVG
@@ -86,6 +88,8 @@ src/
 ├── lib/                        # clientes de API, utilitários, tokens de animação
 └── types/
 tests/                          # Vitest + Testing Library
+scripts/generate-icons.mjs      # gera o conjunto de ícones
+public/icons/                   # ícones do manifest (gerados)
 ```
 
 ## Design tokens
@@ -103,9 +107,14 @@ Definidos em [`tailwind.config.ts`](tailwind.config.ts):
 
 As curvas e variantes do Framer Motion ficam em [`lib/motion.ts`](src/lib/motion.ts).
 
-## SEO
+## SEO, metadados e ícones
 
-- Metadata por página, com `canonical`, Open Graph e cartão `summary_large_image`.
+- **Toda página** monta os metadados com `pageMetadata()` ([`lib/seo.ts`](src/lib/seo.ts)): título, descrição, `canonical`, `og:url`, Open Graph e cartão do X com os mesmos textos e a imagem padrão.
+  - O layout **não** define `canonical` de propósito. Se definisse, as páginas sem canônico próprio herdariam o da home e o Google as trataria como cópias dela.
+  - O Next substitui o `openGraph` do layout em vez de mesclar. Por isso `pageMetadata` repete `siteName`, `locale` e a imagem padrão.
+  - Mantenha as descrições abaixo de ~160 caracteres. Nas matérias, `truncate()` corta o resumo do WordPress.
+- Metadados globais no [`layout.tsx`](src/app/layout.tsx): `robots` (com `max-image-preview: large`), palavras-chave, autoria, `applicationName`, `appleWebApp`, `theme-color` e `format-detection`.
+- **Ícones** (gerados por `npm run icons`): `icon.svg` (símbolo amarelo sobre quadrado vermelho, legível em abas claras e escuras), `favicon.ico` (16/32/48 px), `apple-icon.png` (180 px) e os ícones do [manifest](src/app/manifest.ts) (192, 512 e *maskable* com área segura para o Android).
 - Matérias com Open Graph de artigo (imagem, autor, datas) e JSON-LD `NewsArticle`.
 - JSON-LD `PoliticalParty` em todas as páginas, com data de fundação e redes oficiais.
 - `sitemap.xml` com as rotas fixas e as 100 matérias mais recentes, regerado junto com as notícias (a cada 5 min).

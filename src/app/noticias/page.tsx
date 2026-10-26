@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { NewsGrid } from "@/components/sections/NewsGrid";
 import { Pagination } from "@/components/ui/Pagination";
+import { pageMetadata } from "@/lib/seo";
 import { getNewsPage } from "@/lib/wordpress";
 import { parsePageParam } from "@/lib/wordpress-utils";
 
@@ -15,11 +16,11 @@ const hrefFor = (page: number) => (page === 1 ? "/noticias" : `/noticias?pagina=
 
 export async function generateMetadata({ searchParams }: NewsListProps): Promise<Metadata> {
   const page = parsePageParam((await searchParams).pagina);
-  return {
+  return pageMetadata({
     title: page > 1 ? `Notícias — página ${page}` : "Notícias",
     description: "As últimas notícias, artigos e posicionamentos do Partido Comunista do Brasil.",
-    alternates: { canonical: hrefFor(page) },
-  };
+    path: hrefFor(page),
+  });
 }
 
 export default async function NewsListPage({ searchParams }: NewsListProps) {

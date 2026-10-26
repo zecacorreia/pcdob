@@ -6,12 +6,14 @@ import { JoinFaq } from "@/components/sections/join/JoinFaq";
 import { JoinHero } from "@/components/sections/join/JoinHero";
 import { JoinPillars } from "@/components/sections/join/JoinPillars";
 import { JoinSteps } from "@/components/sections/join/JoinSteps";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Filie-se",
   description:
     "O futuro tem partido. Filie-se ao PCdoB pela plataforma oficial PCdoB Digital e organize-se com quem luta, trabalha, estuda e resiste.",
-};
+  path: "/filie-se",
+});
 
 export default function JoinPage() {
   return (

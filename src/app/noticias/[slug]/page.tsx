@@ -10,6 +10,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { ReadingProgress } from "@/components/ui/ReadingProgress";
 import { ShareLinks } from "@/components/ui/ShareLinks";
 import { formatDate } from "@/lib/format";
+import { BASE_OPEN_GRAPH, DEFAULT_SHARE_IMAGE, truncate } from "@/lib/seo";
 import { SITE, absoluteUrl } from "@/lib/site";
 import { getLatestNews, getNewsBySlug } from "@/lib/wordpress";
 
@@ -22,25 +23,32 @@ const getArticle = cache(getNewsBySlug);
 
 export async function generateMetadata({ params }: ArticleProps): Promise<Metadata> {
   const article = await getArticle((await params).slug);
-  if (!article) return { title: "Notícia não encontrada" };
+  if (!article) return { title: "Notícia não encontrada", robots: { index: false } };
 
   const path = `/noticias/${article.slug}`;
+  const description = article.excerpt ? truncate(article.excerpt, 160) : undefined;
   return {
     title: article.title,
-    description: article.excerpt || undefined,
+    description,
     alternates: { canonical: path },
     openGraph: {
+      ...BASE_OPEN_GRAPH,
       type: "article",
       url: path,
       title: article.title,
-      description: article.excerpt || undefined,
+      description,
       publishedTime: article.date,
       modifiedTime: article.modified,
       authors: article.author ? [article.author] : undefined,
       section: article.category,
-      images: article.image ? [{ url: article.image.src, alt: article.image.alt }] : undefined,
+      images: [article.image ? { url: article.image.src, alt: article.image.alt } : DEFAULT_SHARE_IMAGE],
     },
-    twitter: { card: "summary_large_image" },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description,
+      images: [article.image?.src ?? DEFAULT_SHARE_IMAGE.url],
+    },
   };
 }
 

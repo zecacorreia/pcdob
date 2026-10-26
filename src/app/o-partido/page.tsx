@@ -8,13 +8,14 @@ import { Leaderships } from "@/components/sections/Leaderships";
 import { partyDocuments } from "@/data/documents";
 import { featuredLeaders } from "@/data/leaders";
 import { getFederalDeputies } from "@/lib/camara";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "O Partido",
   description:
-    "Fundado em 1922, o Partido Comunista do Brasil é o partido da classe operária e do conjunto dos trabalhadores brasileiros. Conheça nossa história, programa, estatuto e lideranças.",
-  alternates: { canonical: "/o-partido" },
-};
+    "Fundado em 1922, o PCdoB é o partido da classe operária e dos trabalhadores brasileiros. Conheça nossa história, programa, estatuto e lideranças.",
+  path: "/o-partido",
+});
 
 /** Datas do Art. 1º do Estatuto do PCdoB. */
 const MILESTONES = [

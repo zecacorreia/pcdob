@@ -3,12 +3,13 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { CookiePreferencesButton } from "@/components/privacy/CookiePreferencesButton";
 import { MEMBERSHIP_URLS } from "@/lib/navigation";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Política de Privacidade",
   description: "Como o site do PCdoB trata dados pessoais e cookies, de acordo com a LGPD.",
-  alternates: { canonical: "/privacidade" },
-};
+  path: "/privacidade",
+});
 
 /**
  * Descreve apenas o que ESTE site faz de fato (newsletter, cookies de
