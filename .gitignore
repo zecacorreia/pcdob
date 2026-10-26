@@ -12,7 +12,7 @@ next-env.d.ts
 !.env.example
 
 # Configurações locais de ferramentas
-.claude/settings.local.json
+.claude/
 
 # Sistema / logs
 .DS_Store

@@ -47,7 +47,7 @@ Todas estão documentadas em [`.env.example`](.env.example).
 | `/filie-se` | Campanha de filiação → plataforma oficial **PCdoB Digital** |
 | `/privacidade` | Política de privacidade (LGPD) |
 | `/api/newsletter` | `POST` de inscrição na newsletter |
-| `/sitemap.xml`, `/robots.txt`, `/opengraph-image` | SEO |
+| `/sitemap.xml`, `/robots.txt`, `/opengraph-image.png` | SEO |
 
 ## De onde vêm os dados
 
@@ -72,8 +72,8 @@ src/
 │   ├── noticias/               # listagem + [slug]
 │   ├── o-partido/ filie-se/ privacidade/
 │   ├── api/newsletter/route.ts
-│   ├── sitemap.ts robots.ts manifest.ts opengraph-image.tsx
-│   ├── icon.svg favicon.ico apple-icon.png   # gerados por `npm run icons`
+│   ├── sitemap.ts robots.ts manifest.ts
+│   ├── icon.svg favicon.ico apple-icon.png opengraph-image.png   # gerados por `npm run icons`
 │   └── not-found.tsx error.tsx
 ├── components/
 │   ├── brand/                  # logo, símbolo e lettering em SVG
@@ -119,7 +119,7 @@ As curvas e variantes do Framer Motion ficam em [`lib/motion.ts`](src/lib/motion
 - JSON-LD `PoliticalParty` em todas as páginas, com data de fundação e redes oficiais.
 - `sitemap.xml` com as rotas fixas e as 100 matérias mais recentes, regerado junto com as notícias (a cada 5 min).
 - `robots.txt` bloqueia apenas `/api/`.
-- Imagem de compartilhamento padrão gerada em [`opengraph-image.tsx`](src/app/opengraph-image.tsx).
+- **Imagem de compartilhamento** ([`opengraph-image.png`](src/app/opengraph-image.png), 1200×630): fundo vermelho, símbolo amarelo e "PCdoB" em branco, gerada por `npm run icons` a partir do logo oficial. Matérias com imagem destacada usam a própria foto.
 
 ## Privacidade, cookies e analytics (LGPD)
 

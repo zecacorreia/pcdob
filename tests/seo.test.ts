@@ -20,8 +20,8 @@ describe("pageMetadata", () => {
 
   it("repete a imagem de compartilhamento padrão (não é herdada do layout)", () => {
     const meta = pageMetadata({ title: "X", description: "Y", path: "/x" });
-    expect(meta.openGraph?.images).toEqual([expect.objectContaining({ url: "/opengraph-image", width: 1200 })]);
-    expect(meta.twitter?.images).toEqual(["/opengraph-image"]);
+    expect(meta.openGraph?.images).toEqual([expect.objectContaining({ url: "/opengraph-image.png", width: 1200 })]);
+    expect(meta.twitter?.images).toEqual(["/opengraph-image.png"]);
   });
 });
 

@@ -13,11 +13,11 @@ export const BASE_OPEN_GRAPH = {
 } as const;
 
 /**
- * Imagem padrão (src/app/opengraph-image.tsx). Precisa ser repetida nas
+ * Imagem padrão (src/app/opengraph-image.png, gerada por `npm run icons`). Precisa ser repetida nas
  * páginas: ao definir `openGraph`, a página deixa de herdar a do layout.
  */
 export const DEFAULT_SHARE_IMAGE = {
-  url: "/opengraph-image",
+  url: "/opengraph-image.png",
   width: 1200,
   height: 630,
   alt: `${SITE.name} — ${SITE.legalName}`,

@@ -1,17 +1,19 @@
 /**
- * Gera o conjunto de ícones do site a partir do símbolo do PCdoB.
+ * Gera ícones e a imagem de compartilhamento a partir do logo oficial
+ * (public/brand/pcdob-logo.svg).
  *
  *   npm run icons
  *
  * Saídas (convenções do App Router + manifest):
- *   src/app/icon.svg           favicon vetorial (navegadores modernos)
- *   src/app/favicon.ico        16/32/48 px (navegadores antigos, leitores de feed)
- *   src/app/apple-icon.png     180 px (tela inicial do iOS)
- *   public/icons/icon-192.png  manifest
- *   public/icons/icon-512.png  manifest
+ *   src/app/icon.svg               favicon vetorial (navegadores modernos)
+ *   src/app/favicon.ico            16/32/48 px (navegadores antigos, leitores de feed)
+ *   src/app/apple-icon.png         180 px (tela inicial do iOS)
+ *   src/app/opengraph-image.png    1200×630 — prévia em WhatsApp, X, Facebook, LinkedIn…
+ *   public/icons/icon-192.png      manifest
+ *   public/icons/icon-512.png      manifest
  *   public/icons/icon-maskable-512.png  manifest (Android, recorte adaptativo)
  */
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -21,8 +23,16 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const RED = "#D7141A";
 const YELLOW = "#FFFF00";
-const SYMBOL_PATH =
-  "M6.224 59.8L0 53.715L13.514 40.224C17.464 43.005 22.294 44.639 27.484 44.639C31.064 44.639 34.504 43.849 37.564 42.454L18.354 23.182L9.244 32.387L0.0190048 23.237L18.384 4.946H36.674L24.464 17.134L44.754 37.508C49.214 33.075 51.864 27.036 51.864 20.254C51.864 11.811 47.634 4.368 41.084 0C52.604 3.248 61.004 13.747 61.004 26.311C61.004 33.929 57.944 40.821 52.924 45.777L61.024 53.743L54.934 59.8L45.944 50.907C42.234 52.761 38.044 53.825 33.604 53.825C27.554 53.825 21.984 51.898 17.434 48.566L6.224 59.8Z";
+const WHITE = "#FFFFFF";
+
+// O logo oficial tem dois paths: o símbolo (amarelo) e o lettering "PCdoB".
+const logoSvg = await readFile(join(ROOT, "public/brand/pcdob-logo.svg"), "utf8");
+const [SYMBOL_PATH, WORDMARK_PATH] = [...logoSvg.matchAll(/<path d="([^"]+)"/g)].map((match) => match[1]);
+if (!SYMBOL_PATH || !WORDMARK_PATH) throw new Error("Não encontrei os paths do símbolo e do lettering no logo.");
+
+/** Caixas dos desenhos no sistema de coordenadas do logo (viewBox 0 0 176 60). */
+const SYMBOL_BOX = { x: 0, y: 0, width: 61.03, height: 59.8 };
+const WORDMARK_BOX = { x: 71.02, y: 2.3, width: 104.1, height: 55.2 };
 
 /**
  * Símbolo amarelo centralizado sobre vermelho, numa tela de 64×64.
@@ -40,6 +50,25 @@ const rounded = iconSvg({ scale: 0.7, radius: 14 });
 const square = iconSvg({ scale: 0.7, radius: 0 });
 // Maskable: o Android pode recortar até ~20% de cada borda — símbolo dentro da zona segura.
 const maskable = iconSvg({ scale: 0.52, radius: 0 });
+
+/**
+ * Imagem de compartilhamento: fundo vermelho, símbolo amarelo e "PCdoB"
+ * branco empilhados e centralizados (composição da bandeira do partido).
+ */
+function socialPreviewSvg({ width, height }) {
+  const symbolHeight = height * 0.36;
+  const wordmarkHeight = height * 0.25;
+  const gap = height * 0.07;
+  const top = (height - symbolHeight - gap - wordmarkHeight) / 2;
+
+  const place = (box, targetHeight, y) => {
+    const scale = targetHeight / box.height;
+    const x = (width - box.width * scale) / 2 - box.x * scale;
+    return `translate(${x.toFixed(2)} ${(y - box.y * scale).toFixed(2)}) scale(${scale.toFixed(4)})`;
+  };
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><rect width="${width}" height="${height}" fill="${RED}"/><path transform="${place(SYMBOL_BOX, symbolHeight, top)}" d="${SYMBOL_PATH}" fill="${YELLOW}"/><path transform="${place(WORDMARK_BOX, wordmarkHeight, top + symbolHeight + gap)}" d="${WORDMARK_PATH}" fill="${WHITE}"/></svg>`;
+}
 
 const png = (svg, size) => sharp(Buffer.from(svg), { density: 72 * (size / 64) }).resize(size, size).png().toBuffer();
 
@@ -84,3 +113,7 @@ await write("src/app/apple-icon.png", await png(square, 180));
 await write("public/icons/icon-192.png", await png(rounded, 192));
 await write("public/icons/icon-512.png", await png(rounded, 512));
 await write("public/icons/icon-maskable-512.png", await png(maskable, 512));
+await write(
+  "src/app/opengraph-image.png",
+  await sharp(Buffer.from(socialPreviewSvg({ width: 1200, height: 630 }))).png().toBuffer(),
+);
