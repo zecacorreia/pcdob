@@ -30,7 +30,7 @@ Todas estão documentadas em [`.env.example`](.env.example).
 
 | Variável | Padrão | Para quê |
 | --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | `https://pcdob.org.br` | URLs absolutas: canonical, sitemap, Open Graph, JSON-LD |
+| `NEXT_PUBLIC_SITE_URL` | detectada na Vercel/Railway; senão `https://pcdob.org.br` | URLs absolutas: canonical, sitemap, Open Graph, JSON-LD. **Tem que ser o endereço onde o site está no ar**, senão o WhatsApp não acha a imagem de compartilhamento. Defina ao apontar um domínio próprio ([`lib/site.ts`](src/lib/site.ts)) |
 | `WORDPRESS_API_URL` | `https://pcdob.org.br/wp-json/wp/v2` | Origem das notícias |
 | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | — | Google Analytics 4. **Vazio = sem analytics e sem banner de cookies** |
 | `NEWSLETTER_WEBHOOK_URL` | — | Recebe as inscrições da newsletter. **Obrigatório em produção** (sem ele a inscrição responde 503; em dev é simulada) |
