@@ -1,0 +1,19 @@
+# Dependências e builds
+node_modules/
+.next/
+out/
+coverage/
+next-env.d.ts
+*.tsbuildinfo
+
+# Variáveis de ambiente (podem conter segredos) — só o exemplo vai para o repositório
+.env
+.env.*
+!.env.example
+
+# Configurações locais de ferramentas
+.claude/settings.local.json
+
+# Sistema / logs
+.DS_Store
+npm-debug.log*

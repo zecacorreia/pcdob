@@ -1,0 +1,6 @@
+# Finais de linha LF em todos os sistemas (evita diffs falsos entre Windows e Linux/macOS).
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
